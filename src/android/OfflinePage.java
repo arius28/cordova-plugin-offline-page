@@ -16,7 +16,6 @@ import org.apache.cordova.CordovaActivity;
 import org.apache.cordova.CordovaPlugin;
 
 import org.apache.cordova.PluginResult;
-import org.apache.cordova.Whitelist;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,7 +35,6 @@ public class OfflinePage extends CordovaPlugin {
     private static final String OFFLINE_PAGE_TEMPLATE = "<html><body><div style=\"top:50%%;text-align:center;position:absolute\">%s</div></body></html>";
 
     private CordovaActivity activity;
-    private CordovaPlugin whiteListPlugin;
     
     private LinearLayout rootLayout;
     private WebView offlineWebView;
@@ -125,31 +123,9 @@ public class OfflinePage extends CordovaPlugin {
             if (data != null) {
                 String url = data.toString();
                 Log.v(LOG_TAG, String.format("Finished loading URL '%s'", url));
-
-               // this.injectCordovaScripts(url);
             }
         }
         return null;
-    }
-    
-    @Override
-    public Boolean shouldAllowRequest(String url) {
-        CordovaPlugin whiteListPlugin = this.getWhitelistPlugin();
-
-        if (whiteListPlugin != null && Boolean.TRUE != whiteListPlugin.shouldAllowRequest(url)) {
-            Log.w(LOG_TAG, String.format("Whitelist rejection: url='%s'", url));
-        }
-
-        // do not alter default behavior.
-        return super.shouldAllowRequest(url);
-    }
-    
-    private CordovaPlugin getWhitelistPlugin() {
-        if (this.whiteListPlugin == null) {
-            this.whiteListPlugin = this.webView.getPluginManager().getPlugin("Whitelist");
-        }
-
-        return whiteListPlugin;
     }
 
     private boolean assetExists(String asset) {
@@ -200,7 +176,9 @@ public class OfflinePage extends CordovaPlugin {
                     @Override
                     public void run() {
                         String currentUrl = me.webView.getUrl();
-                        me.webView.loadUrlIntoView(currentUrl, false);
+                        //me.webView.loadUrlIntoView(currentUrl, false);
+						View webView = me.webView.getEngine().getView();
+						webView.loadUrlIntoView(currentUrl, false);
                     }
                 });
             } else {
