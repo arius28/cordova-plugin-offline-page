@@ -40,7 +40,7 @@ public class OfflinePage extends CordovaPlugin {
     
     private LinearLayout rootLayout;
     private WebView offlineWebView;
-    private boolean offlineOverlayEnabled;
+    private boolean offlineOverlayEnabled = true;
 
     private boolean isConnectionError = false;
 
@@ -121,8 +121,35 @@ public class OfflinePage extends CordovaPlugin {
             if (!this.isConnectionError) {
                 this.hideOfflineOverlay();
             }
+            
+            if (data != null) {
+                String url = data.toString();
+                Log.v(LOG_TAG, String.format("Finished loading URL '%s'", url));
+
+               // this.injectCordovaScripts(url);
+            }
         }
         return null;
+    }
+    
+    @Override
+    public Boolean shouldAllowRequest(String url) {
+        CordovaPlugin whiteListPlugin = this.getWhitelistPlugin();
+
+        if (whiteListPlugin != null && Boolean.TRUE != whiteListPlugin.shouldAllowRequest(url)) {
+            Log.w(LOG_TAG, String.format("Whitelist rejection: url='%s'", url));
+        }
+
+        // do not alter default behavior.
+        return super.shouldAllowRequest(url);
+    }
+    
+    private CordovaPlugin getWhitelistPlugin() {
+        if (this.whiteListPlugin == null) {
+            this.whiteListPlugin = this.webView.getPluginManager().getPlugin("Whitelist");
+        }
+
+        return whiteListPlugin;
     }
 
     private boolean assetExists(String asset) {
