@@ -16,13 +16,19 @@ import org.apache.cordova.CordovaActivity;
 import org.apache.cordova.CordovaPlugin;
 
 import org.apache.cordova.PluginResult;
+import org.apache.cordova.Whitelist;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class OfflinePage extends CordovaPlugin {
     private static final String LOG_TAG = "OfflinePage";
@@ -30,7 +36,8 @@ public class OfflinePage extends CordovaPlugin {
     private static final String OFFLINE_PAGE_TEMPLATE = "<html><body><div style=\"top:50%%;text-align:center;position:absolute\">%s</div></body></html>";
 
     private CordovaActivity activity;
-
+    private CordovaPlugin whiteListPlugin;
+    
     private LinearLayout rootLayout;
     private WebView offlineWebView;
     private boolean offlineOverlayEnabled;
